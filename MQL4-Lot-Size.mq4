@@ -15,7 +15,8 @@ input double   stopLoss = 0.0;   // Stop loss
 input int      takeOrder = 0;    // 0 to NOT take order, 1 to take order
 //---
 
-double lotSize;
+double lotSize; // Lot size value to display on chart and open orders
+int maxSlippage = 0; // Maximum price slippage to use for buy or sell orders
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -147,11 +148,44 @@ void PotentialBuy(double accountBalance){
 	   "Stop Loss: ", stopLoss, "\n",
 	   "Lot Size: ", lotSize
 	);
+
+	if(takeOrder == 1){
+		if(entry - Ask >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point && entry - stopLoss >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+			BuyStopOrder();
+		}
+		else if(Ask == entry && Bid - stopLoss >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+			BuyOrder();
+		}
+	}
 }
 //+------------------------------------------------------------------+
 
 //+------------------------------------------------------------------+
-//| Potential sell function                                           |
+//| Open a buy stop order                                            |
+//+------------------------------------------------------------------+
+void BuyStopOrder(){
+	int orderTicket = OrderSend(_Symbol, OP_BUYSTOP, lotSize, NormalizeDouble(entry, Digits), maxSlippage, NormalizeDouble(stopLoss, Digits), 0.0, NULL, 0, 0);
+
+	if(orderTicket > -1){
+	   ExpertRemove();
+	}
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Open a buy order                                                 |
+//+------------------------------------------------------------------+
+void BuyOrder(){
+	int orderTicket = OrderSend(_Symbol, OP_BUY, lotSize, NormalizeDouble(entry, Digits), maxSlippage, NormalizeDouble(stopLoss, Digits), 0.0, NULL, 0, 0);
+
+	if(orderTicket > -1){
+	   ExpertRemove();
+	}
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Potential sell function                                          |
 //+------------------------------------------------------------------+
 void PotentialSell(double accountBalance){
 	double pipLoss = (stopLoss - entry) / Point;
@@ -165,5 +199,38 @@ void PotentialSell(double accountBalance){
 	   "Stop Loss: ", stopLoss, "\n",
 	   "Lot Size: ", lotSize
 	);
+
+	if(takeOrder == 1){
+		if(Bid - entry >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point && stopLoss - entry >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+			SellStopOrder();
+		}
+		else if(Bid == entry && stopLoss - Ask >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+			SellOrder();
+		}
+	}
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Open a sell stop order                                           |
+//+------------------------------------------------------------------+
+void SellStopOrder(){
+	int orderTicket = OrderSend(_Symbol, OP_SELLSTOP, lotSize, NormalizeDouble(entry, Digits), maxSlippage, NormalizeDouble(stopLoss, Digits), 0.0, NULL, 0, 0);
+
+	if(orderTicket > -1){
+	   ExpertRemove();
+	}
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Open a sell order                                                |
+//+------------------------------------------------------------------+
+void SellOrder(){
+	int orderTicket = OrderSend(_Symbol, OP_SELL, lotSize, NormalizeDouble(entry, Digits), maxSlippage, NormalizeDouble(stopLoss, Digits), 0.0, NULL, 0, 0);
+
+	if(orderTicket > -1){
+	   ExpertRemove();
+	}
 }
 //+------------------------------------------------------------------+
