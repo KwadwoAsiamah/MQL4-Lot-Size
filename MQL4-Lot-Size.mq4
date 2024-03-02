@@ -80,6 +80,8 @@ void OnDeinit(const int reason){}
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick(){
+	RefreshRates();
+
 	double accountBalance = NormalizeDouble(AccountBalance() + GetTotalProfit(), 2);
 
 	if(entry > stopLoss){
