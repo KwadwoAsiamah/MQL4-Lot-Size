@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Kwadwo Asiamah"
 #property link      "https://github.com/KwadwoAsiamah/MQL4-Lot-Size"
-#property version   "1.00"
+#property version   "1.10"
 #property strict
 
 //--- Input parameters
