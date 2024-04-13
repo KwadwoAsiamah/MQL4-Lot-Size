@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Kwadwo Asiamah"
 #property link      "https://github.com/KwadwoAsiamah/MQL4-Lot-Size"
-#property version   "1.10"
+#property version   "1.20"
 #property strict
 
 //--- Input parameters
@@ -117,14 +117,14 @@ double GetTotalProfit(){
 			if(OrderType() == OP_BUY && OrderStopLoss() > OrderOpenPrice()){
 				double pips = (OrderStopLoss() - OrderOpenPrice()) / SymbolInfoDouble(OrderSymbol(), SYMBOL_POINT);
 				if(Digits == 3 || Digits == 5)
-					pips = pips / 10;
+					pips /= 10;
 
 				totalProfit += pips * DetPipVal() * OrderLots() + OrderSwap();
 			}
 			else if(OrderType() == OP_SELL && OrderStopLoss() < OrderOpenPrice()){
 				double pips = (OrderOpenPrice() - OrderStopLoss()) / SymbolInfoDouble(OrderSymbol(), SYMBOL_POINT);
 				if(Digits == 3 || Digits == 5)
-					pips = pips / 10;
+					pips /= 10;
 
 				totalProfit += pips * DetPipVal() * OrderLots() + OrderSwap();
 			}
@@ -155,7 +155,7 @@ void PotentialBuy(double accountBalance){
 		if(entry - Ask >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point && entry - stopLoss >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
 			BuyStopOrder();
 		}
-		else if(Ask == entry && Bid - stopLoss >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+		else if(Ask == NormalizeDouble(entry, Digits) && Bid - stopLoss >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
 			BuyOrder();
 		}
 	}
@@ -206,7 +206,7 @@ void PotentialSell(double accountBalance){
 		if(Bid - entry >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point && stopLoss - entry >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
 			SellStopOrder();
 		}
-		else if(Bid == entry && stopLoss - Ask >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+		else if(Bid == NormalizeDouble(entry, Digits) && stopLoss - Ask >= MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
 			SellOrder();
 		}
 	}
