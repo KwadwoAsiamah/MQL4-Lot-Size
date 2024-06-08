@@ -96,9 +96,9 @@ void OnTick(){
 //+------------------------------------------------------------------+
 //| Determine pip value Of symbol                                    |
 //+------------------------------------------------------------------+
-double DetPipVal(){
-	double pipValue = MarketInfo(_Symbol, MODE_TICKVALUE);
-	if(Digits == 3 || Digits == 5)
+double DetPipVal(string symbol){
+	double pipValue = MarketInfo(symbol, MODE_TICKVALUE);
+	if(int(SymbolInfoInteger(symbol, SYMBOL_DIGITS)) == 3 || int(SymbolInfoInteger(symbol, SYMBOL_DIGITS)) == 5)
 		pipValue *= 10;
 
 	return pipValue;
@@ -119,14 +119,14 @@ double GetTotalProfit(){
 				if(int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 3 || int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 5)
 					pips /= 10;
 
-				totalProfit += pips * DetPipVal() * OrderLots() + OrderSwap();
+				totalProfit += pips * DetPipVal(OrderSymbol()) * OrderLots() + OrderSwap();
 			}
 			else if(OrderType() == OP_SELL && OrderStopLoss() < OrderOpenPrice()){
 				double pips = (OrderOpenPrice() - OrderStopLoss()) / SymbolInfoDouble(OrderSymbol(), SYMBOL_POINT);
 				if(int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 3 || int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 5)
 					pips /= 10;
 
-				totalProfit += pips * DetPipVal() * OrderLots() + OrderSwap();
+				totalProfit += pips * DetPipVal(OrderSymbol()) * OrderLots() + OrderSwap();
 			}
 		}
 	}
@@ -143,7 +143,7 @@ void PotentialBuy(double accountBalance){
 	if(Digits == 3 || Digits == 5)
 	   pipLoss /= 10;
 
-	lotSize = NormalizeDouble((accountBalance * riskPCT / 100)/(pipLoss * DetPipVal()), 2);
+	lotSize = NormalizeDouble((accountBalance * riskPCT / 100)/(pipLoss * DetPipVal(_Symbol)), 2);
 
 	Comment(
 	   "Entry: ", entry, "\n",
@@ -194,7 +194,7 @@ void PotentialSell(double accountBalance){
 	if(Digits == 3 || Digits == 5)
 	   pipLoss /= 10;
 
-	lotSize = NormalizeDouble((accountBalance * riskPCT / 100)/(pipLoss * DetPipVal()), 2);
+	lotSize = NormalizeDouble((accountBalance * riskPCT / 100)/(pipLoss * DetPipVal(_Symbol)), 2);
 
 	Comment(
 	   "Entry: ", entry, "\n",
