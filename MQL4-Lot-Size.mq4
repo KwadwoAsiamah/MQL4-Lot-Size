@@ -116,14 +116,14 @@ double GetTotalProfit(){
 		if(OrderSelect(i, SELECT_BY_POS)){
 			if(OrderType() == OP_BUY && OrderStopLoss() > OrderOpenPrice()){
 				double pips = (OrderStopLoss() - OrderOpenPrice()) / SymbolInfoDouble(OrderSymbol(), SYMBOL_POINT);
-				if(Digits == 3 || Digits == 5)
+				if(int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 3 || int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 5)
 					pips /= 10;
 
 				totalProfit += pips * DetPipVal() * OrderLots() + OrderSwap();
 			}
 			else if(OrderType() == OP_SELL && OrderStopLoss() < OrderOpenPrice()){
 				double pips = (OrderOpenPrice() - OrderStopLoss()) / SymbolInfoDouble(OrderSymbol(), SYMBOL_POINT);
-				if(Digits == 3 || Digits == 5)
+				if(int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 3 || int(SymbolInfoInteger(OrderSymbol(), SYMBOL_DIGITS)) == 5)
 					pips /= 10;
 
 				totalProfit += pips * DetPipVal() * OrderLots() + OrderSwap();
