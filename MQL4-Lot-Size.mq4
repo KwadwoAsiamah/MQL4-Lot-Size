@@ -5,13 +5,13 @@
 //+------------------------------------------------------------------+
 #property copyright "Kwadwo Asiamah"
 #property link      "https://github.com/KwadwoAsiamah/MQL4-Lot-Size"
-#property version   "1.20"
+#property version   "1.3"
 #property strict
 
 //--- Input parameters
 input double   riskPCT = 5.0;    // Risk percent; default is 5.0%
 input double   entry = 0.0;      // Entry price
-input double   stopLoss = 0.0;   // Stop loss
+input double   stopLoss = 0.0;   // Stop-Loss
 input int      takeOrder = 0;    // 0 to NOT take order, 1 to take order
 //---
 
@@ -33,27 +33,27 @@ int OnInit(){
 		ExpertRemove();
 	}
 
-	if(stopLoss == 0.0){ // Ensures stop loss is not 0.0. Also ensures a stop loss is always set.
-		Alert("Enter your stop loss. It cannot be 0.0");
+	if(stopLoss == 0.0){ // Ensures stop-loss is not 0.0. Also ensures a stop-loss is always set.
+		Alert("Enter your stop-loss. It cannot be 0.0");
 		ExpertRemove();
 	}
 
-	if(entry != 0.0 && stopLoss != 0.0){ // Ensures entry and stop loss values are not too close to each other if they're set.
+	if(entry != 0.0 && stopLoss != 0.0){ // Ensures entry and stop-loss values are not too close to each other if they're set.
 		if(entry > stopLoss){ // Potential buy order
-			if(entry - stopLoss < MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+			if(NormalizeDouble(entry - MarketInfo(_Symbol, MODE_SPREAD) * Point, Digits) - stopLoss < MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
 				Alert(
-					"Your stop loss is too close to your entry price.", "\n",
-					"It should be ", NormalizeDouble(entry - MarketInfo(_Symbol, MODE_STOPLEVEL) * Point, Digits), " or lower."
+					"Your stop-loss is too close to your entry price.", "\n",
+					"It should be ", NormalizeDouble((entry - MarketInfo(_Symbol, MODE_SPREAD) * Point) - MarketInfo(_Symbol, MODE_STOPLEVEL) * Point, Digits), " or lower."
 				);
 				ExpertRemove();
 			}
 		}
 		else{ // Potential sell order
-			if(stopLoss - entry < MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
+			if(stopLoss - NormalizeDouble(entry + MarketInfo(_Symbol, MODE_SPREAD) * Point, Digits) < MarketInfo(_Symbol, MODE_STOPLEVEL) * Point){
 				Alert(
-					"Your stop loss is too close to your entry price.", "\n",
-					"It should be ", NormalizeDouble(entry + MarketInfo(_Symbol, MODE_STOPLEVEL) * Point, Digits), " or higher."
-					);
+					"Your stop-loss is too close to your entry price.", "\n",
+					"It should be ", NormalizeDouble((entry + MarketInfo(_Symbol, MODE_SPREAD) * Point) + MarketInfo(_Symbol, MODE_STOPLEVEL) * Point, Digits), " or higher."
+				);
 				ExpertRemove();
 			}
 		}
